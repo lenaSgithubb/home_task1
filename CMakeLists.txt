@@ -10,7 +10,7 @@ option(WITH_BOOST_TEST "Whether to build Boost test" ON)
 configure_file(version.h.in version.h)
 
 add_executable(helloworld_cli main.cpp)
-add_library(helloworld lib.cpp)
+add_library(helloworld SHARED lib.cpp)
 
 set_target_properties(helloworld_cli helloworld PROPERTIES
     CXX_STANDARD 14
@@ -26,7 +26,20 @@ target_link_libraries(helloworld_cli PRIVATE
 )
 
 if(WITH_BOOST_TEST)
-    find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+    include_directories("C:/Users/Admin/Downloads/boost_1_84_0")
+    link_directories("C:/Users/Admin/Downloads/boost_1_84_0/stage/lib")
+
+    FIND_PACKAGE(Boost)
+    IF (Boost_FOUND)
+        INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+        ADD_DEFINITIONS( "-DHAS_BOOST" )
+        message("boost found!!!")
+        message("INCLUDE PATH " ${CMAKE_INCLUDE_PATH})
+        message("LIBRARY PATH " ${CMAKE_LIBRARY_PATH})
+        SET(boost_debug 1)
+    ENDIF()
+
+    find_package(Boost REQUIRED COMPONENTS unit_test_framework )
     add_executable(test_version test_version.cpp)
 
     set_target_properties(test_version PROPERTIES
